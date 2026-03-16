@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <title>La Femme au Mortier - Monde du Toguna</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&display=swap"
+      rel="stylesheet"
+    />
+    <script
+      type="module"
+      src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"
+    ></script>
+    <style>
+      :root {
+        --bg: #0a080d;
+        --gold: #f9d58b;
+        --white: #ffffff;
+      }
+
+      body,
+      html {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        width: 100%;
+        background-color: var(--bg);
+        color: var(--white);
+        font-family: "Segoe UI", sans-serif;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+
+      #stars-canvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+        pointer-events: none;
+      }
+
+      /* --- NAVIGATION --- */
+      header {
+        position: fixed;
+        top: 0;
+        width: 100%;
+        z-index: 1000;
+      }
+      .logo-container {
+        padding-top: env(safe-area-inset-top, 20px);
+        text-align: center;
+      }
+      .logo-main {
+        height: 35px;
+        filter: drop-shadow(0 0 12px var(--gold));
+      }
+
+      .btn-back-nav {
+        position: absolute;
+        top: calc(env(safe-area-inset-top, 20px) + 50px);
+        left: 15px;
+        padding: 8px 12px;
+        background: rgba(255, 255, 255, 0.1);
+        color: var(--white);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 8px;
+        font-family: "Orbitron", sans-serif;
+        font-size: 0.6rem;
+        text-decoration: none;
+        backdrop-filter: blur(5px);
+      }
+
+      .btn-info {
+        position: absolute;
+        top: calc(env(safe-area-inset-top, 20px) + 90px);
+        left: 15px;
+        padding: 8px 12px;
+        background: rgba(249, 213, 139, 0.1);
+        color: var(--gold);
+        border: 1px solid var(--gold);
+        border-radius: 8px;
+        font-family: "Orbitron", sans-serif;
+        font-size: 0.6rem;
+        cursor: pointer;
+        backdrop-filter: blur(5px);
+      }
+
+      .btn-audio {
+        position: absolute;
+        top: calc(env(safe-area-inset-top, 20px) + 50px);
+        right: 15px;
+        width: 42px;
+        height: 42px;
+        background: var(--gold);
+        color: var(--bg);
+        border: none;
+        border-radius: 50%;
+        font-size: 1.2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 0 15px var(--gold);
+        cursor: pointer;
+      }
+
+      /* --- OVERLAY --- */
+      #story-overlay {
+        position: fixed;
+        inset: 0;
+        background: radial-gradient(circle at center, #1a151c 0%, #0a080d 100%);
+        z-index: 3000;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 20px;
+        transition: transform 0.8s cubic-bezier(0.85, 0, 0.15, 1);
+      }
+
+      #story-overlay h1 {
+        font-family: "Orbitron", sans-serif;
+        font-weight: 900;
+        color: var(--gold);
+        font-size: 1.3rem;
+        margin: 0 0 15px 0;
+        letter-spacing: 2px;
+      }
+
+      /* IMAGE CENTRÉE AVEC PADDING */
+      .story-img-container {
+        width: 130px;
+        height: 130px;
+        border-radius: 50%;
+        border: 2px solid var(--gold);
+        overflow: hidden;
+        margin-bottom: 25px;
+        background: rgba(249, 213, 139, 0.1);
+        box-shadow: 0 0 35px rgba(249, 213, 139, 0.7);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10px; /* Ajout d'air autour du pilier */
+        box-sizing: border-box;
+      }
+      .story-img-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain; /* Correction majeure : contain au lieu de cover */
+        filter: drop-shadow(0 0 10px rgba(249, 213, 139, 0.3));
+      }
+
+      .content-wrapper {
+        max-width: 280px;
+        margin-bottom: 30px;
+        line-height: 1.5;
+        font-size: 0.9rem;
+        background: rgba(249, 213, 139, 0.05);
+        padding: 18px;
+        border-radius: 15px;
+        border: 1px solid rgba(249, 213, 139, 0.2);
+        color: var(--white);
+      }
+
+      .btn-start {
+        font-family: "Orbitron", sans-serif;
+        padding: 14px 35px;
+        background: var(--gold);
+        border: none;
+        border-radius: 50px;
+        font-weight: 900;
+        color: var(--bg);
+        font-size: 0.85rem;
+        cursor: pointer;
+      }
+
+      /* --- SCÈNE 3D --- */
+      model-viewer {
+        width: 100%;
+        height: 100%;
+        z-index: 5;
+        --poster-color: transparent;
+      }
+      #ar-button {
+        position: absolute;
+        bottom: 110px;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 15px 30px;
+        background: var(--gold);
+        color: var(--bg);
+        border: none;
+        border-radius: 50px;
+        font-family: "Orbitron", sans-serif;
+        font-weight: 900;
+        font-size: 0.8rem;
+        z-index: 100;
+        box-shadow: 0 0 20px rgba(249, 213, 139, 0.4);
+        white-space: nowrap;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="stars-canvas"></canvas>
+    <audio
+      id="audio-guide"
+      src="https://github.com/fansestar355-star/Toguna-Assets/raw/refs/heads/main/audio_pilier_3..mp3"
+    ></audio>
+
+    <div id="story-overlay">
+      <div class="story-img-container">
+        <img src="img_pilier_3.png" alt="La Femme au Mortier" />
+      </div>
+      <h1>3. LA FEMME AU MORTIER</h1>
+      <div class="content-wrapper">
+        "Ce pilier rend hommage au geste sacré de la transformation. Le rythme
+        du pilon rappelle que chaque grain de savoir doit être travaillé avec
+        patience pour nourrir l'esprit."
+      </div>
+      <button class="btn-start" onclick="closeOverlay()">DÉCODER</button>
+    </div>
+
+    <header>
+      <div class="logo-container">
+        <img src="kabakoo.png" class="logo-main" alt="Logo Kabakoo" />
+      </div>
+      <a href="https://rt9y2z.csb.app/" class="btn-back-nav">← RETOUR</a>
+      <button class="btn-info" onclick="openOverlay()">📖 INFO</button>
+      <button class="btn-audio" onclick="toggleAudio()">🔊</button>
+    </header>
+
+    <model-viewer
+      src="pilier_3.glb"
+      ar
+      ar-modes="webxr scene-viewer quick-look"
+      camera-controls
+      auto-rotate
+      shadow-intensity="1"
+      camera-orbit="0deg 75deg 15m"
+      field-of-view="35deg"
+      loading="eager"
+    >
+      <button slot="ar-button" id="ar-button">VOIR DANS MON SALON</button>
+    </model-viewer>
+
+    <script>
+      const audio = document.getElementById("audio-guide");
+
+      // Modifié : On retire l'audio.play() d'ici
+      function closeOverlay() {
+        document.getElementById("story-overlay").style.transform =
+          "translateY(-100%)";
+      }
+
+      function openOverlay() {
+        document.getElementById("story-overlay").style.transform =
+          "translateY(0)";
+      }
+
+      // L'audio ne se lancera qu'ici, lors du clic sur l'icône 🔊
+      function toggleAudio() {
+        if (audio.paused) {
+          audio.play();
+        } else {
+          audio.pause();
+          audio.currentTime = 0; // Optionnel : remet au début si on reclique
+        }
+      }
+
+      const canvas = document.getElementById("stars-canvas");
+      const ctx = canvas.getContext("2d");
+      function resize() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      }
+      window.addEventListener("resize", resize);
+      resize();
+      let stars = [];
+      for (let i = 0; i < 50; i++)
+        stars.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          r: Math.random() * 1.2,
+          s: Math.random() * 0.1,
+        });
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "rgba(249,213,139,0.3)";
+        stars.forEach((st) => {
+          ctx.beginPath();
+          ctx.arc(st.x, st.y, st.r, 0, Math.PI * 2);
+          ctx.fill();
+          st.y += st.s;
+          if (st.y > canvas.height) st.y = 0;
+        });
+        requestAnimationFrame(draw);
+      }
+      draw();
+    </script>
+  </body>
+</html>
