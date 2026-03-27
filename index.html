@@ -46,7 +46,6 @@
         pointer-events: none;
       }
 
-      /* --- NAVIGATION --- */
       header {
         position: fixed;
         top: 0;
@@ -110,7 +109,6 @@
         cursor: pointer;
       }
 
-      /* --- OVERLAY --- */
       #story-overlay {
         position: fixed;
         inset: 0;
@@ -134,7 +132,6 @@
         letter-spacing: 2px;
       }
 
-      /* IMAGE CENTRÉE AVEC PADDING */
       .story-img-container {
         width: 130px;
         height: 130px;
@@ -147,13 +144,13 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        padding: 10px; /* Ajout d'air autour du pilier */
+        padding: 10px;
         box-sizing: border-box;
       }
       .story-img-container img {
         width: 100%;
         height: 100%;
-        object-fit: contain; /* Correction majeure : contain au lieu de cover */
+        object-fit: contain;
         filter: drop-shadow(0 0 10px rgba(249, 213, 139, 0.3));
       }
 
@@ -181,7 +178,6 @@
         cursor: pointer;
       }
 
-      /* --- SCÈNE 3D --- */
       model-viewer {
         width: 100%;
         height: 100%;
@@ -232,6 +228,7 @@
         <img src="kabakoo.png" class="logo-main" alt="Logo Kabakoo" />
       </div>
       <a
+        id="btn-retour"
         href="https://fansestar355-star.github.io/Toguna-World/"
         class="btn-back-nav"
         >← RETOUR</a
@@ -257,7 +254,6 @@
     <script>
       const audio = document.getElementById("audio-guide");
 
-      // Modifié : On retire l'audio.play() d'ici
       function closeOverlay() {
         document.getElementById("story-overlay").style.transform =
           "translateY(-100%)";
@@ -268,13 +264,12 @@
           "translateY(0)";
       }
 
-      // L'audio ne se lancera qu'ici, lors du clic sur l'icône 🔊
       function toggleAudio() {
         if (audio.paused) {
           audio.play();
         } else {
           audio.pause();
-          audio.currentTime = 0; // Optionnel : remet au début si on reclique
+          audio.currentTime = 0;
         }
       }
 
@@ -306,6 +301,15 @@
         });
         requestAnimationFrame(draw);
       }
+
+      // --- PERSISTANCE : transmet le pilier au bouton RETOUR ---
+      var urlParams = new URLSearchParams(window.location.search);
+      var fromPillar = urlParams.get("from_pillar");
+      if (fromPillar !== null) {
+          var btnRetour = document.getElementById("btn-retour");
+          btnRetour.href = btnRetour.href + "?pillar=" + fromPillar;
+      }
+
       draw();
     </script>
   </body>
